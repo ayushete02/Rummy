@@ -1,5 +1,5 @@
-'use client'
-import React from "react";
+'use clientgit'
+import React, { useEffect } from "react";
 import { useState } from "react";
 import Image from "next/image";
 import Navbar from "@/components/navbar";
@@ -22,11 +22,10 @@ const gameOptions: GameOption[] = [
     GameOption.Scissors,
 ];
 
-
 const getImageSource = (option: GameOption): string => {
     switch (option) {
         case GameOption.Rock:
-            return "https://nehalhazem.github.io/rockPaperScissors.io/img/paper.png";
+            return "https://nehalhazem.github.io/rockPaperScissors.io/img/rock.png";
         case GameOption.Paper:
             return "https://nehalhazem.github.io/rockPaperScissors.io/img/paper.png";
         case GameOption.Scissors:
@@ -59,6 +58,14 @@ const StonePaperScissorsGame: React.FC = () => {
     const [gameResult, setGameResult] = useState<GameResult | null>(null);
     const [showDialog, setShowDialog] = useState(false);
 
+    useEffect(() => {
+        if (userOption && computerOption) {
+            const result = getGameResult(userOption, computerOption);
+            setGameResult(result);
+            setShowDialog(true);
+        }
+    }, [computerOption]);
+
     const playAgain = () => {
         setUserOption(null);
         setComputerOption(null);
@@ -74,9 +81,6 @@ const StonePaperScissorsGame: React.FC = () => {
     const selectOption = (option: GameOption) => {
         setUserOption(option);
         makeComputerOption();
-        const result = getGameResult(option, computerOption!);
-        setGameResult(result);
-        setShowDialog(true);
     };
 
     const getResultColor = (): string => {
@@ -116,8 +120,7 @@ const StonePaperScissorsGame: React.FC = () => {
                     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                         <div className="bg-black p-8 rounded-lg">
                             <h2
-                                className={`text-2xl font-bold text-center mb-4 ${getResultColor()
-                                    }`}
+                                className={`text-2xl font-bold text-center mb-4 ${getResultColor()}`}
                             >
                                 {gameResult === GameResult.Win && "You win!"}
                                 {gameResult === GameResult.Lose && "You lose!"}
