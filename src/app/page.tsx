@@ -69,7 +69,7 @@ const LandingPage = () => {
 
           <div className="my-1 px-1 w-full md:w-1/2 lg:my-4 lg:px-4 lg:w-1/3">
             <article className="overflow-hidden rounded-lg shadow-lg bg-white border-4 text-black" >
-              <a href="/game/tic-tac-toe">
+              <a href="/game/connect-four">
                 <img alt="Placeholder" className="block h-auto w-full" src="https://picsum.photos/600/400/?random" />
               </a>
               <header className="flex items-center justify-center leading-tight p-2 md:p-4 md:pb-0">
