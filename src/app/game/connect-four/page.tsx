@@ -3,6 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { range } from 'lodash';
 import clsx from 'clsx';
 import { Dialog, Transition } from '@headlessui/react';
+import Navbar from '@/components/navbar';
+import { Button, Modal } from 'antd';
+
 
 const ROWS = 6;
 const COLS = 7;
@@ -15,6 +18,24 @@ const ConnectFour = () => {
     const [currentPlayer, setCurrentPlayer] = useState<'red' | 'yellow'>('red');
     const [winner, setWinner] = useState<string | null>(null);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [open, setOpen] = useState(false);
+
+    const showModal = () => {
+        setOpen(true);
+      };
+    
+      const handleOk = () => {
+        setLoading(true);
+        setTimeout(() => {
+          setLoading(false);
+          setOpen(false);
+        }, 3000);
+      };
+    
+      const handleCancel = () => {
+        setOpen(false);
+      };
 
     useEffect(() => {
         if (currentPlayer === 'yellow') {
@@ -33,12 +54,14 @@ const ConnectFour = () => {
 
         if (checkWin(updatedGrid, row, col, currentPlayer)) {
             setWinner(currentPlayer);
+            showModal()
             setIsPopupOpen(true);
             return;
         }
 
         if (checkDraw(updatedGrid)) {
             setWinner('draw');
+            showModal()
             setIsPopupOpen(true);
             return;
         }
@@ -140,16 +163,43 @@ const ConnectFour = () => {
         setGrid(createEmptyGrid());
         setCurrentPlayer('red');
         setWinner(null);
+        handleCancel()
         setIsPopupOpen(false);
     };
 
     return (
-        <div className="flex flex-col items-center mt-8">
+        <>
+           <Modal
+        open={open}
+        centered
+        title="Title"
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={[
+          <Button key="back" href="/" onClick={handleCancel}>
+            Back
+          </Button>,
+
+          <Button
+            key="link"
+            type="primary"
+            loading={loading}
+            onClick={resetGame}
+          >
+            Play again
+          </Button>,
+        ]}
+      >
+                                        {winner === 'draw' ? 'It\'s a draw!' : `${winner} wins!`}
+
+      </Modal>
+        <Navbar/>
+        <div className="flex flex-col justify-center items-center h-screen">
             <h1 className="text-2xl font-bold mb-4">Connect Four</h1>
-            <div className="bg-white rounded p-4">
+            <div className="bg-gray-600 rounded-3xl p-4">
                 <div className="grid grid-cols-7 gap-2">
-                    {grid.map((row, rowIndex) =>
-                        row.map((cell, colIndex) => (
+                    {grid.map((row: any[], rowIndex: number) =>
+                        row.map((cell: string | null, colIndex: number) => (
                             <button
                                 key={`${rowIndex}-${colIndex}`}
                                 className={clsx(
@@ -157,7 +207,7 @@ const ConnectFour = () => {
                                     {
                                         'bg-red-500': cell === 'red',
                                         'bg-yellow-500': cell === 'yellow',
-                                        'bg-gray-200': cell === null,
+                                        'bg-white': cell === null,
                                     },
                                     'focus:outline-none'
                                 )}
@@ -169,48 +219,9 @@ const ConnectFour = () => {
                 </div>
             </div>
 
-            <Transition.Root show={isPopupOpen} as={React.Fragment}>
-                <Dialog
-                    as="div"
-                    className="fixed inset-0 flex items-center justify-center z-50"
-                    onClose={resetGame}
-                >
-                    <Transition.Child
-                        as={React.Fragment}
-                        enter="transition-opacity duration-300"
-                        enterFrom="opacity-0"
-                        enterTo="opacity-100"
-                        leave="transition-opacity duration-300"
-                        leaveFrom="opacity-100"
-                        leaveTo="opacity-0"
-                    >
-                        <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
-                    </Transition.Child>
-                    <Transition.Child
-                        as={React.Fragment}
-                        enter="transition-transform duration-300"
-                        enterFrom="scale-50"
-                        enterTo="scale-100"
-                        leave="transition-transform duration-300"
-                        leaveFrom="scale-100"
-                        leaveTo="scale-50"
-                    >
-                        <div className="bg-white p-4 rounded shadow-lg">
-                            <Dialog.Title as="h3" className="text-lg font-bold mb-2 text-neutral-950
-                            ">
-                                {winner === 'draw' ? 'It\'s a draw!' : `${winner} wins!`}
-                            </Dialog.Title>
-                            <button
-                                className="px-4 py-2 rounded bg-blue-500 text-white font-bold"
-                                onClick={resetGame}
-                            >
-                                Play Again
-                            </button>
-                        </div>
-                    </Transition.Child>
-                </Dialog>
-            </Transition.Root>
+           
         </div>
+        </>
     );
 };
 
