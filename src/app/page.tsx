@@ -51,7 +51,7 @@ const LandingPage = () => {
               <header className="flex items-center justify-center leading-tight p-2 md:p-4 md:pb-0">
                 <h1 className="text-lg">
                   <a className="no-underline hover:underline text-black" href="#">
-                    Tic Tac Toe
+                    Stone Paper Scissors
                   </a>
                 </h1>
                 {/* <p className="text-grey-darker text-sm">
@@ -75,7 +75,7 @@ const LandingPage = () => {
               <header className="flex items-center justify-center leading-tight p-2 md:p-4 md:pb-0">
                 <h1 className="text-lg">
                   <a className="no-underline hover:underline text-black" href="#">
-                    Tic Tac Toe
+                    Connect Four
                   </a>
                 </h1>
                 {/* <p className="text-grey-darker text-sm">
