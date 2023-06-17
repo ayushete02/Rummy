@@ -1,0 +1,22 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// schema.prisma
+// Define the User model
+model User {
+  id          Int      @id @default(autoincrement())
+  name        String
+  rank        Int?
+  amount_won  Decimal? @db.Decimal(10, 2)
+  amount_lost Decimal? @db.Decimal(10, 2)
+  address     String?  @db.VarChar(42)
+}
