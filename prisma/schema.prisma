@@ -13,10 +13,11 @@ datasource db {
 // schema.prisma
 // Define the User model
 model User {
-  id          Int      @id @default(autoincrement())
-  name        String
-  rank        Int?
-  amount_won  Decimal? @db.Decimal(10, 2)
-  amount_lost Decimal? @db.Decimal(10, 2)
-  address     String?  @db.VarChar(42)
+  id           Int      @id @default(autoincrement())
+  name         String
+  rank         Int?
+  game_win     Int? // New field
+  game_loss    Int? // New field
+  total_amount Decimal? @db.Decimal(10, 2) // New field
+  address      String   @unique
 }

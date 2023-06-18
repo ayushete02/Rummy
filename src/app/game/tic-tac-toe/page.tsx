@@ -4,7 +4,6 @@ import Head from 'next/head';
 import { Button, Modal } from 'antd';
 import Navbar from '@/components/navbar';
 
-
 const TicTacToe = () => {
   const [board, setBoard] = useState(Array(9).fill(''));
   const [player, setPlayer] = useState('X');
@@ -13,6 +12,9 @@ const TicTacToe = () => {
 
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+
+  const [address, setAddress] = useState('');
+  const [bolAddress, setBolAddress] = useState(false);
 
   const showModal = () => {
     setOpen(true);
@@ -76,8 +78,15 @@ const TicTacToe = () => {
       if (board[a] && board[a] === board[b] && board[b] === board[c]) {
         setGameOver(true);
         setMessage(`${board[a]} wins!`);
-        showModal()
-
+        console.log("this is board :", board[a]);
+        console.log(typeof (board[a]));
+        showModal();
+        if (board[a] == "X") {
+          updateUserData(true);
+        }
+        else {
+          updateUserData(false);
+        }
         return;
       }
     }
@@ -85,7 +94,8 @@ const TicTacToe = () => {
     if (board.every((cell) => cell !== '')) {
       setGameOver(true);
       setMessage("It's a tie!");
-      showModal()
+      showModal();
+      //updateUserData(false);
     }
   };
 
@@ -96,9 +106,60 @@ const TicTacToe = () => {
     setMessage('');
   };
 
-  return (
+  const updateUserData = async (isWin: boolean) => {
+    try {
+      if (bolAddress) {
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
 
-    <div className='bg-black'>
+        var raw = JSON.stringify({
+          "walletAddress": address,
+          "isWin": isWin
+        });
+
+        var requestOptions = {
+          method: 'POST',
+          headers: myHeaders,
+          body: raw,
+          redirect: 'follow'
+        };
+
+        fetch("/api/updates", requestOptions)
+          .then(response => response.text())
+          .then(result => console.log(result))
+          .catch(error => console.log('error', error));
+
+      }
+    } catch (error) {
+      console.error('Error updating user data:', error);
+    }
+  };
+
+
+  useEffect(() => {
+    const connectWallet = async () => {
+      if (typeof window !== 'undefined' && typeof (window as any).ethereum !== 'undefined') {
+        try {
+          const ethereum = (window as any).ethereum;
+          const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+          setAddress(accounts[0]);
+          setBolAddress(true);
+          console.log('Connected account address:', address);
+        } catch (error) {
+          console.error('Error connecting wallet:', error);
+          alert('Failed to connect to MetaMask');
+        }
+      } else {
+        alert('MetaMask is not installed');
+      }
+    };
+
+    connectWallet();
+  }, []);
+
+
+  return (
+    <div className="bg-black">
       <Modal
         open={open}
         centered
@@ -123,15 +184,13 @@ const TicTacToe = () => {
       >
         {message}
       </Modal>
-      <Navbar/>
+      {/* <Navbar /> */}
 
-    
-      <div className="min-h-screen flex items-center justify-center ">
-
+      <div className="min-h-screen flex items-center justify-center">
         <Head>
-          <title >Tic Tac Toe</title>
+          <title>Tic Tac Toe</title>
         </Head>
-        <div className=''>
+        <div className="">
           <h1 className="text-5xl text-center mb-6 font-semibold">Tic Tac Toe</h1>
           <div className="bg-white p-4 min-w-3xl w-[550px] h-[550px] max-w-3xl rounded-lg shadow-md">
             <div className="grid grid-cols-3 gap-6 text-4xl justify-center m-auto">
@@ -147,22 +206,9 @@ const TicTacToe = () => {
               ))}
             </div>
           </div>
-          {/* <div className="mt-4">
-            {gameOver && (
-              <button
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg"
-                onClick={resetGame}
-              >
-                Play Again
-              </button>
-            )}
-            {message && <p className="mt-4">{message}</p>}
-          </div> */}
         </div>
       </div>
-
     </div>
-
   );
 };
 

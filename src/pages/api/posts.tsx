@@ -8,5 +8,5 @@ export default async function handler(req, res) {
 
     await prisma.$disconnect();
 
-    res.status(200).json({ message: 'Table data logged' });
+    res.status(200).json({ message: 'Table data logged.......' });
 }

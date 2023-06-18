@@ -16,6 +16,9 @@ const ConnectFour = () => {
     const [winner, setWinner] = useState<string | null>(null);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
 
+    const [address, setAddress] = useState('');
+    const [bolAddress, setBolAddress] = useState(false);
+
     useEffect(() => {
         if (currentPlayer === 'yellow') {
             // Simulate computer's move
@@ -33,6 +36,12 @@ const ConnectFour = () => {
 
         if (checkWin(updatedGrid, row, col, currentPlayer)) {
             setWinner(currentPlayer);
+            if (winner == "red")
+                updateUserData(true);
+            else
+                updateUserData(false);
+            console.log("current player", currentPlayer);
+            console.log(typeof (currentPlayer));
             setIsPopupOpen(true);
             return;
         }
@@ -142,6 +151,55 @@ const ConnectFour = () => {
         setWinner(null);
         setIsPopupOpen(false);
     };
+    const updateUserData = async (isWin: boolean) => {
+        try {
+            if (bolAddress) {
+                var myHeaders = new Headers();
+                myHeaders.append("Content-Type", "application/json");
+
+                var raw = JSON.stringify({
+                    "walletAddress": address,
+                    "isWin": isWin
+                });
+
+                var requestOptions = {
+                    method: 'POST',
+                    headers: myHeaders,
+                    body: raw,
+                    redirect: 'follow'
+                };
+
+                fetch("/api/updates", requestOptions)
+                    .then(response => response.text())
+                    .then(result => console.log(result))
+                    .catch(error => console.log('error', error));
+
+            }
+        } catch (error) {
+            console.error('Error updating user data:', error);
+        }
+    };
+
+    useEffect(() => {
+        const connectWallet = async () => {
+            if (typeof window !== 'undefined' && typeof (window as any).ethereum !== 'undefined') {
+                try {
+                    const ethereum = (window as any).ethereum;
+                    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+                    setAddress(accounts[0]);
+                    setBolAddress(true);
+                    console.log('Connected account address:', address);
+                } catch (error) {
+                    console.error('Error connecting wallet:', error);
+                    alert('Failed to connect to MetaMask');
+                }
+            } else {
+                alert('MetaMask is not installed');
+            }
+        };
+
+        connectWallet();
+    }, []);
 
     return (
         <div className="flex flex-col items-center mt-8">

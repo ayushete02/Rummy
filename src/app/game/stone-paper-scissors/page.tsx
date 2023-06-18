@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Navbar from "@/components/navbar";
 
+
 enum GameOption {
     Rock = "rock",
     Paper = "paper",
@@ -57,12 +58,16 @@ const StonePaperScissorsGame: React.FC = () => {
     const [computerOption, setComputerOption] = useState<GameOption | null>(null);
     const [gameResult, setGameResult] = useState<GameResult | null>(null);
     const [showDialog, setShowDialog] = useState(false);
+    const [address, setAddress] = useState('');
+    const [bolAddress, setBolAddress] = useState(false);
 
     useEffect(() => {
         if (userOption && computerOption) {
             const result = getGameResult(userOption, computerOption);
             setGameResult(result);
             setShowDialog(true);
+            console.log(GameResult.Win);
+            updateUserData(result === GameResult.Win);
         }
     }, [computerOption]);
 
@@ -96,6 +101,47 @@ const StonePaperScissorsGame: React.FC = () => {
         }
     };
 
+    const updateUserData = async (isWin: boolean) => {
+        try {
+            console.log("im in sps");
+            const requestOptions = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    "walletAddress": address,
+                    "isWin": isWin
+                }),
+            };
+
+            const response = await fetch("/api/updates", requestOptions);
+            const data = await response.text();
+            console.log(data);
+        } catch (error) {
+            console.error('Error updating user data:', error);
+        }
+    };
+    useEffect(() => {
+        const connectWallet = async () => {
+            if (typeof window !== 'undefined' && typeof (window as any).ethereum !== 'undefined') {
+                try {
+                    const ethereum = (window as any).ethereum;
+                    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+                    setAddress(accounts[0]);
+                    setBolAddress(true);
+                    console.log('Connected account address:', address);
+                } catch (error) {
+                    console.error('Error connecting wallet:', error);
+                    alert('Failed to connect to MetaMask');
+                }
+            } else {
+                alert('MetaMask is not installed');
+            }
+        };
+
+        connectWallet();
+    }, []);
     return (
         <div className="flex justify-center items-center h-screen">
             <div className="space-x-4">
