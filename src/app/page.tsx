@@ -4,6 +4,7 @@ import "./style.css"
 import { useState } from "react";
 import Image from "next/image";
 import Navbar from "@/components/navbar";
+import Leaderboard from "@/leaderboard/page";
 
 const LandingPage = () => {
 
@@ -94,6 +95,7 @@ const LandingPage = () => {
 
         </div>
       </div>
+
 
       <div className="about-section">
         <div className="about-description text-center  m-auto max-w-4xl my-64">

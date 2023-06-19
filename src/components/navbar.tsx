@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from 'react'
-import "./style.css"
+import "./style.css";
+import Leaderboard, { getUsers } from '../leaderboard/page'; // Adjust the import path if necessary
+
 
 const Navbar = () => {
   const [address, setaddress] = useState('');
@@ -17,6 +19,8 @@ const Navbar = () => {
     }
 
   }
+
+
   ConnectWallet()
   return (<>
     <link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap" rel="stylesheet" />
@@ -26,7 +30,10 @@ const Navbar = () => {
           <a href="#">Aphelion</a>
         </div>
         <ul>
-          <li><a href="#" className='text-lg hover:text-gray-500'>Leaderboard</a></li>
+          <li>
+            <a href="#" className="text-lg hover:text-gray-500">Leaderboard</a>
+          </li>
+
           <li><a href="#games" className=' text-lg hover:text-gray-500'>Games</a></li>
           <li>  {bol_address == false ? <button onClick={ConnectWallet} className="bg-transparent hover:bg-gray-500 text-white font-semibold hover:text-white py-2 px-4 border border-white hover:border-transparent rounded">
             Connect Wallet
@@ -38,18 +45,30 @@ const Navbar = () => {
           <div className="bar" />
         </a>
       </div>
-    </div>
+    </div >
     <div className="burger-links text-lg">
       <ul>
-        <li><a href="#" className='text-lg hover:text-gray-500'>Leaderboard</a></li>
+        <li>
+          <a href="/leaderboard" className="text-lg hover:text-gray-500">Leaderboard</a>
+        </li>
+
         <li>  {bol_address == true ? <button onClick={ConnectWallet} className="bg-transparent hover:bg-gray-500 text-white font-semibold hover:text-white py-2 px-4 border border-white hover:border-transparent rounded">
           Connect Wallet
         </button> : <button className="bg-transparent hover:bg-gray-500 text-white font-semibold hover:text-white py-2 px-4 border border-white hover:border-transparent rounded disabled">
           {address.slice(0, 6) + '...' + address.slice(address.length - 4, address.length)}
         </button>}</li></ul>
     </div>
+
   </>
   )
 }
+export async function getServerSideProps() {
+  const users = await getUsers();
 
+  return {
+    props: {
+      users,
+    },
+  };
+}
 export default Navbar
